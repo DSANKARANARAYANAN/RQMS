@@ -1,6 +1,1 @@
 date,module,rejection_type,quantity,reason,operator,shift
-2025-05-28 18:00:01,GRS-YOKE,Yoke Id U/S,5,Offset issue,Suresh,Day
-2025-05-28 18:16:14,Yoke,OD US,26,Operator fault,Sankar,Evening
-2025-05-28 18:24:37,Yoke,OD US,1,Kdkkkks,Djjw,Day
-2025-05-28 18:24:44,Yoke,OD US,16,Kdkkkks,Djjw,Day
-2025-05-28 18:24:59,Drive,OD OS,36,Kdkkkks,Djjw,Evening
