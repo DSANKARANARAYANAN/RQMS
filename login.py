@@ -193,46 +193,48 @@ def main():
         
     # Login form with modern styling
     with st.form("login_form", clear_on_submit=False):
-        st.markdown('<div class="login-form">', unsafe_allow_html=True)
         st.markdown("### 🔐 Please Login")
-            
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                username = st.text_input("👤 Username", placeholder="Enter your username", key="login_username")
-            with col2:
-                password = st.text_input("🔒 Password", type="password", placeholder="Enter your password", key="login_password")
-            
-            st.markdown("")  # Add some space
-            login_button = st.form_submit_button("🚀 Login", type="primary", use_container_width=True)
-            
-            if login_button:
-                if not username or not password:
-                    st.error("❌ Please enter both username and password")
-                else:
-                    user_data = auth_manager.authenticate(username, password)
-                    if user_data:
-                        st.session_state.authenticated = True
-                        st.session_state.username = username
-                        st.session_state.user_role = user_data["role"]
-                        st.session_state.full_name = user_data["full_name"]
-                        # Update last login time
-                        auth_manager.update_last_login(username)
-                        st.success(f"✅ Welcome, {user_data['full_name']}!")
-                        st.balloons()
-                        
-                        # Redirect to main application
-                        st.info("🔄 Redirecting to dashboard...")
-                        st.switch_page("pages/00_Dashboard.py")
-                    else:
-                        st.error("❌ Invalid username or password")
         
-        st.markdown("---")
-        st.markdown(
-            '<div style="text-align: center; color: #888; font-size: 0.9rem;">'
-            '© 2025 Quality Rejection Management System | Secure Manufacturing Solutions'
-            '</div>', 
-            unsafe_allow_html=True
-        )
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            username = st.text_input("👤 Username", placeholder="Enter your username", key="login_username")
+        with col2:
+            password = st.text_input("🔒 Password", type="password", placeholder="Enter your password", key="login_password")
+        
+        st.markdown("")  # Add some space
+        login_button = st.form_submit_button("🚀 Login", type="primary", use_container_width=True)
+        
+        if login_button:
+            if not username or not password:
+                st.error("❌ Please enter both username and password")
+            else:
+                user_data = auth_manager.authenticate(username, password)
+                if user_data:
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.session_state.user_role = user_data["role"]
+                    st.session_state.full_name = user_data["full_name"]
+                    # Update last login time
+                    auth_manager.update_last_login(username)
+                    st.success(f"✅ Welcome, {user_data['full_name']}!")
+                    st.balloons()
+                    
+                    # Redirect to main application
+                    st.info("🔄 Redirecting to dashboard...")
+                    st.switch_page("pages/00_Dashboard.py")
+                else:
+                    st.error("❌ Invalid username or password")
+        
+    # Close login container
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Footer
+    st.markdown("""
+    <div style="text-align: center; color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top: 2rem;">
+        🏭 QRMS - Quality Rejection Management System<br>
+        <small style="font-size: 0.8rem;">© 2025 Secure Manufacturing Solutions</small>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
