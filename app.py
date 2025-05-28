@@ -3,30 +3,28 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
-import os
 from utils.data_manager import DataManager
 from utils.scheduler import start_scheduler
 
-# Initialize data manager
-@st.cache_resource
-def init_data_manager():
-    return DataManager()
-
 # Page configuration
 st.set_page_config(
-    page_title="QRMS - Quality Rejection Management System",
+    page_title="QRMS Dashboard",
     page_icon="🏭",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+# Start scheduler for automated reports
+start_scheduler()
+
+def init_data_manager():
+    """Initialize data manager"""
+    return DataManager()
+
 # Initialize data manager
 data_manager = init_data_manager()
 
-# Start scheduler for automated emails
-start_scheduler()
-
-# Main dashboard
+# Dashboard header
 st.title("🏭 QRMS - Quality Rejection Management System")
 st.markdown("---")
 
@@ -81,7 +79,7 @@ if not types_df.empty:
 
 # Main dashboard content
 if filtered_df.empty:
-    st.warning("📋 No rejection data available for the selected filters. Use the Data Entry page to add rejection records.")
+    st.warning("📋 No rejection data available for the selected filters.")
     st.info("💡 **Getting Started:**\n- Navigate to 'Data Entry' for single records or 'Batch Entry' for multiple records\n- Visit 'Manage Types' to set up modules and rejection types\n- Configure email settings for automated reports")
 else:
     # Key metrics
@@ -96,12 +94,12 @@ else:
         st.metric("Total Quantity Rejected", f"{total_quantity:,}")
     
     with col3:
-        avg_daily = total_rejections / max(1, (end_date - start_date).days + 1)
-        st.metric("Avg Daily Rejections", f"{avg_daily:.1f}")
-    
-    with col4:
         unique_modules = filtered_df['module'].nunique()
         st.metric("Modules Affected", unique_modules)
+    
+    with col4:
+        unique_types = filtered_df['rejection_type'].nunique()
+        st.metric("Rejection Types", unique_types)
 
     st.markdown("---")
 
@@ -109,86 +107,148 @@ else:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("📈 Rejections by Date")
-        daily_rejections = filtered_df.groupby('date').agg({
-            'quantity': 'sum',
-            'date': 'count'
-        }).rename(columns={'date': 'count'})
+        st.subheader("📈 Daily Rejection Trend")
+        filtered_df['date_only'] = filtered_df['date'].dt.date
+        daily_rejections = filtered_df.groupby('date_only')['quantity'].sum().reset_index()
         
-        fig_timeline = px.line(
-            daily_rejections.reset_index(),
-            x='date',
-            y='quantity',
-            title='Daily Rejection Quantity Trend',
-            labels={'quantity': 'Quantity Rejected', 'date': 'Date'}
-        )
-        fig_timeline.update_layout(showlegend=False)
-        st.plotly_chart(fig_timeline, use_container_width=True)
+        if len(daily_rejections) > 0:
+            fig_timeline = px.line(
+                daily_rejections,
+                x='date_only',
+                y='quantity',
+                title="Daily Rejection Quantity Trend",
+                markers=True
+            )
+            fig_timeline.update_layout(
+                xaxis_title="Date",
+                yaxis_title="Quantity Rejected",
+                showlegend=False,
+                height=400
+            )
+            st.plotly_chart(fig_timeline, use_container_width=True)
     
     with col2:
-        st.subheader("🔧 Rejections by Module")
-        module_rejections = filtered_df.groupby('module')['quantity'].sum().sort_values(ascending=False)
+        st.subheader("🥧 Rejections by Type")
+        rejection_counts = filtered_df.groupby('rejection_type')['quantity'].sum().sort_values(ascending=False)
         
-        fig_modules = px.bar(
-            x=module_rejections.values,
-            y=module_rejections.index,
-            orientation='h',
-            title='Rejection Quantity by Module',
-            labels={'x': 'Quantity Rejected', 'y': 'Module'}
-        )
-        st.plotly_chart(fig_modules, use_container_width=True)
+        if len(rejection_counts) > 0:
+            fig_pie = px.pie(
+                values=rejection_counts.values,
+                names=rejection_counts.index,
+                title="Rejection Distribution by Type"
+            )
+            fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+            fig_pie.update_layout(height=400)
+            st.plotly_chart(fig_pie, use_container_width=True)
 
+    # Additional charts
     col3, col4 = st.columns(2)
     
     with col3:
-        st.subheader("⚠️ Rejections by Type")
-        type_rejections = filtered_df.groupby('rejection_type')['quantity'].sum().sort_values(ascending=False)
+        st.subheader("📊 Rejections by Module")
+        module_counts = filtered_df.groupby('module')['quantity'].sum().sort_values(ascending=False)
         
-        fig_types = px.pie(
-            values=type_rejections.values,
-            names=type_rejections.index,
-            title='Rejection Distribution by Type'
-        )
-        st.plotly_chart(fig_types, use_container_width=True)
+        if len(module_counts) > 0:
+            fig_bar = px.bar(
+                x=module_counts.values,
+                y=module_counts.index,
+                orientation='h',
+                title="Rejection Quantity by Module",
+                labels={'x': 'Quantity Rejected', 'y': 'Module'}
+            )
+            fig_bar.update_layout(
+                yaxis={'categoryorder': 'total ascending'},
+                height=400
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
     
     with col4:
-        st.subheader("📊 Recent Rejections")
-        recent_rejections = filtered_df.nlargest(10, 'date')[['date', 'module', 'rejection_type', 'quantity', 'reason']]
-        recent_rejections['date'] = recent_rejections['date'].dt.strftime('%Y-%m-%d')
-        st.dataframe(recent_rejections, use_container_width=True, hide_index=True)
+        st.subheader("🔧 Top Rejection Reasons")
+        reason_counts = filtered_df.groupby('reason')['quantity'].sum().sort_values(ascending=False).head(10)
+        
+        if len(reason_counts) > 0:
+            fig_reasons = px.bar(
+                x=reason_counts.index,
+                y=reason_counts.values,
+                title="Top 10 Rejection Reasons",
+                labels={'x': 'Reason', 'y': 'Quantity'}
+            )
+            fig_reasons.update_layout(
+                xaxis_tickangle=-45,
+                height=400
+            )
+            st.plotly_chart(fig_reasons, use_container_width=True)
 
+    # Pareto Analysis
     st.markdown("---")
+    st.subheader("📈 Pareto Analysis - 80/20 Rule")
     
-    # Detailed data table
-    st.subheader("📋 Detailed Rejection Records")
+    rejection_totals = filtered_df.groupby('rejection_type')['quantity'].sum().sort_values(ascending=False)
+    cumulative_percentage = (rejection_totals.cumsum() / rejection_totals.sum() * 100)
     
-    # Export functionality
-    col1, col2, col3 = st.columns([1, 1, 4])
-    with col1:
-        csv_data = filtered_df.to_csv(index=False)
-        st.download_button(
-            label="📥 Download CSV",
-            data=csv_data,
-            file_name=f"rejections_{start_date}_to_{end_date}.csv",
-            mime="text/csv"
+    if len(rejection_totals) > 0:
+        # Create figure with secondary y-axis
+        fig_pareto = go.Figure()
+        
+        # Add bar chart
+        fig_pareto.add_trace(
+            go.Bar(
+                x=rejection_totals.index,
+                y=rejection_totals.values,
+                name='Quantity',
+                yaxis='y',
+                marker_color='lightblue'
+            )
         )
-    
-    with col2:
-        if st.button("🔄 Refresh Data"):
-            st.rerun()
-    
-    # Display table
-    display_df = filtered_df.copy()
-    display_df['date'] = display_df['date'].dt.strftime('%Y-%m-%d %H:%M')
-    st.dataframe(display_df, use_container_width=True, hide_index=True)
+        
+        # Add cumulative percentage line
+        fig_pareto.add_trace(
+            go.Scatter(
+                x=rejection_totals.index,
+                y=cumulative_percentage.values,
+                mode='lines+markers',
+                name='Cumulative %',
+                yaxis='y2',
+                line=dict(color='red', width=3),
+                marker=dict(size=8)
+            )
+        )
+        
+        # Add 80% reference line
+        fig_pareto.add_hline(y=80, line_dash="dash", line_color="red", 
+                            annotation_text="80% Line", yref='y2')
+        
+        fig_pareto.update_layout(
+            title='Pareto Chart - Rejection Types (80/20 Analysis)',
+            xaxis_title='Rejection Type',
+            yaxis=dict(title='Quantity', side='left'),
+            yaxis2=dict(title='Cumulative Percentage (%)', side='right', overlaying='y', range=[0, 105]),
+            height=500,
+            hovermode='x unified'
+        )
+        st.plotly_chart(fig_pareto, use_container_width=True)
 
-# Footer
-st.markdown("---")
-st.markdown(
-    """
-    <div style='text-align: center; color: #666; padding: 10px;'>
-    QRMS - Quality Rejection Management System | Built with Streamlit
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    # Recent rejections table
+    st.markdown("---")
+    st.subheader("🕒 Recent Rejections")
+    if not filtered_df.empty:
+        recent_rejections = filtered_df.nlargest(10, 'date')[['date', 'module', 'rejection_type', 'quantity', 'reason', 'operator']]
+        recent_rejections['date'] = recent_rejections['date'].dt.strftime('%Y-%m-%d %H:%M')
+        st.dataframe(recent_rejections, use_container_width=True)
+
+    # Export data functionality
+    st.markdown("---")
+    col1, col2 = st.columns([3, 1])
+    
+    with col1:
+        st.subheader("📥 Export Data")
+        
+    with col2:
+        if st.button("📊 Download CSV"):
+            csv_data = filtered_df.to_csv(index=False)
+            st.download_button(
+                label="💾 Download Filtered Data",
+                data=csv_data,
+                file_name=f"rejection_data_{start_date}_to_{end_date}.csv",
+                mime="text/csv"
+            )
