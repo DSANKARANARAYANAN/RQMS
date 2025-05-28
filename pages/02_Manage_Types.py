@@ -18,6 +18,12 @@ data_manager = init_data_manager()
 
 st.title("🔧 Manage Rejection Types & Modules")
 st.markdown("Configure and manage rejection types and manufacturing modules")
+
+# Add relevant image/icon
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("https://via.placeholder.com/400x200/ff6b6b/ffffff?text=🔧+Management+Portal", caption="Module & Type Management")
+
 st.markdown("---")
 
 # Create two main sections
@@ -33,6 +39,13 @@ with tab1:
             col1, col2 = st.columns([2, 3])
             
             with col1:
+                # Business Unit selection
+                business_unit = st.selectbox(
+                    "Business Unit *",
+                    options=["GRS", "CMSPU"],
+                    help="Select the business unit for this module"
+                )
+                
                 module_name = st.text_input(
                     "Module Name *",
                     help="Enter a unique name for the manufacturing module"
