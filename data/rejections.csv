@@ -1,2 +1,3 @@
 date,module,rejection_type,quantity,reason,operator,shift
 2025-05-28 18:00:01,GRS-YOKE,Yoke Id U/S,5,Offset issue,Suresh,Day
+2025-05-28 18:16:14,Yoke,OD US,26,Operator fault,Sankar,Evening
