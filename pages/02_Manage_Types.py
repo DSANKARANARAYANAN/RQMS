@@ -192,7 +192,7 @@ with tab2:
                         st.write("📦 No modules mapped")
                 
                 with col4:
-                    if st.button("🗑️", key=f"del_type_{idx}", help="Delete rejection type"):
+                    if st.button("🗑️", key=f"del_type_{rejection_type['name']}_{idx}", help="Delete rejection type"):
                         success, message = data_manager.delete_rejection_type(rejection_type['name'])
                         if success:
                             st.success(f"✅ {message}")
