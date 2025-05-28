@@ -15,6 +15,117 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Modern CSS for professional dashboard
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    .stApp {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    }
+    
+    .main-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .main-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .metric-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        margin-bottom: 1rem;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .chart-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .stMetric {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .stMetric > div {
+        background: transparent;
+    }
+    
+    .sidebar .stSelectbox > div > div {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar .stSelectbox > div > div:focus-within {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .stButton > button {
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .stDataFrame {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .element-container {
+        margin-bottom: 1rem;
+    }
+    
+    .user-info-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize authentication
 auth_manager = get_auth_manager()
 
@@ -37,9 +148,13 @@ data_manager = init_data_manager()
 # Show user info in sidebar
 auth_manager.show_user_info()
 
-# Dashboard header
-st.title("📊 QRMS Dashboard - Quality Analytics")
-st.markdown("---")
+# Modern Dashboard Header
+st.markdown("""
+<div class="main-header">
+    <div class="main-title">📊 QRMS Dashboard</div>
+    <div class="main-subtitle">Quality Analytics & Rejection Management</div>
+</div>
+""", unsafe_allow_html=True)
 
 # Sidebar filters
 st.sidebar.header("📊 Dashboard Filters")
