@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from utils.data_manager import DataManager
 
 # Page configuration
@@ -246,5 +247,4 @@ with st.expander("❓ Help & Guidelines"):
     - Coordinate with your team to ensure consistent naming
     """)
 
-# Import pandas for data operations
-import pandas as pd
+
