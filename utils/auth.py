@@ -19,21 +19,33 @@ class AuthManager:
                     "password_hash": self._hash_password("admin123"),
                     "role": "super_admin",
                     "full_name": "Super Administrator",
+                    "email": "superadmin@company.com",
+                    "department": "IT Administration",
                     "created_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "created_by": "system",
+                    "last_login": None,
                     "permissions": ["all"]
                 },
                 "admin": {
                     "password_hash": self._hash_password("admin456"),
                     "role": "admin", 
                     "full_name": "System Administrator",
+                    "email": "admin@company.com",
+                    "department": "Quality Management",
                     "created_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                    "permissions": ["manage_modules", "manage_types", "export_data", "view_data"]
+                    "created_by": "system",
+                    "last_login": None,
+                    "permissions": ["manage_modules", "manage_types", "export_data", "view_data", "view_dashboard"]
                 },
                 "qcuser": {
                     "password_hash": self._hash_password("user789"),
                     "role": "user",
                     "full_name": "Quality Control User", 
+                    "email": "qcuser@company.com",
+                    "department": "Quality Control",
                     "created_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    "created_by": "system",
+                    "last_login": None,
                     "permissions": ["enter_data", "view_dashboard", "view_data"]
                 }
             }
