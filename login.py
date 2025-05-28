@@ -15,7 +15,7 @@ def main():
         st.success("✅ You are already logged in!")
         st.info("🔄 Click the button below to go to the main application")
         if st.button("🚀 Go to Dashboard", type="primary", use_container_width=True):
-            st.switch_page("app.py")
+            st.switch_page("pages/00_Dashboard.py")
         return
     
     # Custom CSS for login page
@@ -104,7 +104,7 @@ def main():
                         
                         # Redirect to main application
                         st.info("🔄 Redirecting to dashboard...")
-                        st.rerun()
+                        st.switch_page("pages/00_Dashboard.py")
                     else:
                         st.error("❌ Invalid username or password")
         

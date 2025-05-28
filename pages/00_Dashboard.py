@@ -21,8 +21,7 @@ auth_manager = get_auth_manager()
 # Check authentication
 if not auth_manager.is_authenticated():
     st.warning("🔒 Please login to access the QRMS dashboard")
-    st.info("🔄 Redirecting to login page...")
-    st.switch_page("login.py")
+    st.info("🔄 Please go back to the login page to authenticate.")
     st.stop()
 
 # Start scheduler for automated reports
