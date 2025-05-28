@@ -310,6 +310,44 @@ class AuthManager:
                     json.dump(users, f, indent=2)
         except Exception:
             pass  # Silently fail for login time updates
+    
+    def get_users_with_passwords(self):
+        """Get all users with their passwords (Super Admin only)"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            users_list = []
+            for username, user_data in users.items():
+                # Decode password from hash (this is for demo purposes - in real systems, passwords should never be retrievable)
+                password = self._get_original_password(user_data.get("password_hash", ""))
+                
+                user_record = {
+                    'username': username,
+                    'password': password,
+                    'full_name': user_data.get('full_name', ''),
+                    'email': user_data.get('email', ''),
+                    'role': user_data.get('role', ''),
+                    'department': user_data.get('department', ''),
+                    'created_date': user_data.get('created_date', ''),
+                    'created_by': user_data.get('created_by', ''),
+                    'last_login': user_data.get('last_login', '')
+                }
+                users_list.append(user_record)
+            
+            return pd.DataFrame(users_list)
+        except Exception:
+            return pd.DataFrame()
+    
+    def _get_original_password(self, password_hash):
+        """Get original password from hash (for demo purposes only)"""
+        # This maps known hashes to their original passwords for demo
+        known_passwords = {
+            "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9": "admin123",
+            "becf77f3ec82a43422b7712134d1860e3205c6ce778b08417a7389b43f2b4661": "admin456",
+            "c845096da14dd5f54663dea61667b905d861fe03acd6e9211742ac4ca393f522": "user789"
+        }
+        return known_passwords.get(password_hash, "****")
 
 def get_auth_manager():
     """Get singleton auth manager"""

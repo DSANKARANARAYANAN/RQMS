@@ -7,7 +7,7 @@
     "department": "IT Administration",
     "created_date": "2025-05-28 18:41:31",
     "created_by": "system",
-    "last_login": null,
+    "last_login": "2025-05-28 18:50:21",
     "permissions": [
       "all"
     ]
@@ -38,6 +38,38 @@
     "created_date": "2025-05-28 18:41:31",
     "created_by": "system",
     "last_login": null,
+    "permissions": [
+      "enter_data",
+      "view_dashboard",
+      "view_data"
+    ]
+  },
+  "sankar": {
+    "password_hash": "6cad51bfff2eac32d35b8a8d2a140c43a0193e0578cb75d55c8db176cc0b3311",
+    "role": "admin",
+    "full_name": "Sankar",
+    "email": "www.smartsankar0001@gmail.com",
+    "department": "QC",
+    "created_date": "2025-05-28 18:51:19",
+    "created_by": "superadmin",
+    "last_login": "2025-05-28 18:51:42",
+    "permissions": [
+      "manage_modules",
+      "manage_types",
+      "export_data",
+      "view_data",
+      "view_dashboard"
+    ]
+  },
+  "san": {
+    "password_hash": "8783b2b689f91e025fe218ad321e256dce8d32c1f969b3ddbbc8b1ac58d1b36d",
+    "role": "user",
+    "full_name": "san",
+    "email": "sankaranarayanan9486@gmail.com",
+    "department": "Mfg",
+    "created_date": "2025-05-28 18:52:19",
+    "created_by": "sankar",
+    "last_login": "2025-05-28 18:52:36",
     "permissions": [
       "enter_data",
       "view_dashboard",

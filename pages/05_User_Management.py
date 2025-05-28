@@ -33,7 +33,7 @@ def main():
     
     # Create tabs for different functions
     if current_user['role'] == 'super_admin':
-        tab1, tab2, tab3 = st.tabs(["Create Users", "Manage Users", "View All Users"])
+        tab1, tab2, tab3, tab4 = st.tabs(["Create Users", "Manage Users", "View All Users", "🔐 Credentials View"])
     else:  # admin
         tab1, tab2, tab3 = st.tabs(["Create Users", "Manage Users", "View Users"])
     
@@ -222,6 +222,109 @@ def main():
                     st.metric("Active Users", active_users)
             else:
                 st.info("No users visible with your current permissions.")
+    
+    # Super Admin only - Credentials View Tab
+    if current_user['role'] == 'super_admin':
+        with tab4:
+            st.subheader("🔐 All User Credentials")
+            st.warning("⚠️ **Security Notice**: This view shows all user passwords. This information is highly sensitive and should only be accessed by authorized Super Administrators.")
+            
+            # Add confirmation checkbox
+            show_passwords = st.checkbox("🔓 I understand the security implications and want to view all credentials", key="show_credentials_checkbox")
+            
+            if show_passwords:
+                # Get users with passwords (Super Admin only feature)
+                credentials_df = auth_manager.get_users_with_passwords()
+                
+                if credentials_df.empty:
+                    st.info("No user credentials found.")
+                else:
+                    st.markdown("### 📋 Complete User Credentials List")
+                    
+                    # Format the dataframe for credentials view
+                    display_columns = ['username', 'password', 'full_name', 'email', 'role', 'department', 'created_date', 'last_login']
+                    available_columns = [col for col in display_columns if col in credentials_df.columns]
+                    
+                    formatted_df = credentials_df[available_columns].copy()
+                    
+                    # Format role names
+                    if 'role' in formatted_df.columns:
+                        formatted_df['role'] = formatted_df['role'].str.title().str.replace('_', ' ')
+                    
+                    # Format column names
+                    column_mapping = {
+                        'username': 'Username',
+                        'password': '🔑 Password',
+                        'full_name': 'Full Name',
+                        'email': 'Email',
+                        'role': 'Role',
+                        'department': 'Department',
+                        'created_date': 'Created Date',
+                        'last_login': 'Last Login'
+                    }
+                    
+                    formatted_df = formatted_df.rename(columns=column_mapping)
+                    
+                    # Display the credentials table
+                    st.dataframe(formatted_df, use_container_width=True)
+                    
+                    # Role-based summary
+                    st.markdown("### 📊 Role Distribution")
+                    role_counts = credentials_df['role'].value_counts()
+                    
+                    col1, col2, col3, col4 = st.columns(4)
+                    
+                    with col1:
+                        super_admin_count = role_counts.get('super_admin', 0)
+                        st.metric("Super Admins", super_admin_count)
+                    
+                    with col2:
+                        admin_count = role_counts.get('admin', 0)
+                        st.metric("Admins", admin_count)
+                    
+                    with col3:
+                        user_count = role_counts.get('user', 0)
+                        st.metric("Users", user_count)
+                    
+                    with col4:
+                        total_users = len(credentials_df)
+                        st.metric("Total Users", total_users)
+                    
+                    # Export credentials (Super Admin only)
+                    st.markdown("### 📥 Export Credentials")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if st.button("📋 Copy All Credentials to Clipboard", type="secondary"):
+                            credentials_text = ""
+                            for _, row in credentials_df.iterrows():
+                                credentials_text += f"Username: {row['username']}\n"
+                                credentials_text += f"Password: {row['password']}\n"
+                                credentials_text += f"Role: {row['role']}\n"
+                                credentials_text += f"Full Name: {row['full_name']}\n"
+                                credentials_text += f"Email: {row['email']}\n"
+                                credentials_text += "---\n"
+                            
+                            st.code(credentials_text, language="text")
+                            st.success("✅ Credentials formatted for copying!")
+                    
+                    with col2:
+                        # Download as CSV
+                        csv_data = formatted_df.to_csv(index=False)
+                        st.download_button(
+                            label="📄 Download Credentials CSV",
+                            data=csv_data,
+                            file_name=f"user_credentials_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                            mime="text/csv",
+                            type="secondary"
+                        )
+                    
+                    # Security reminder
+                    st.markdown("---")
+                    st.error("🚨 **Security Reminder**: Never share these credentials via email, chat, or unsecured channels. Always use secure methods for credential distribution.")
+            
+            else:
+                st.info("🔒 Check the box above to view sensitive credential information.")
 
 if __name__ == "__main__":
     main()
