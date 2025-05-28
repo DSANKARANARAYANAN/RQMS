@@ -2,6 +2,7 @@ import streamlit as st
 import hashlib
 import json
 import os
+import pandas as pd
 from datetime import datetime
 
 class AuthManager:
@@ -119,6 +120,8 @@ class AuthManager:
                     st.session_state.username = username
                     st.session_state.user_role = user_data["role"]
                     st.session_state.full_name = user_data["full_name"]
+                    # Update last login time
+                    self.update_last_login(username)
                     st.success(f"✅ Welcome, {user_data['full_name']}!")
                     st.rerun()
                 else:
@@ -171,6 +174,130 @@ class AuthManager:
             
             if st.sidebar.button("🚪 Logout", type="secondary", use_container_width=True):
                 self.logout()
+    
+    def user_exists(self, username):
+        """Check if username already exists"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            return username in users
+        except Exception:
+            return False
+    
+    def create_user(self, username, password, email, full_name, role, department="", created_by=""):
+        """Create a new user"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            # Check if user already exists
+            if username in users:
+                return False
+            
+            # Create new user data
+            new_user = {
+                "password_hash": self._hash_password(password),
+                "role": role,
+                "full_name": full_name,
+                "email": email,
+                "department": department,
+                "created_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "created_by": created_by,
+                "last_login": None,
+                "permissions": self.get_user_permissions(role)
+            }
+            
+            # Add user to dictionary
+            users[username] = new_user
+            
+            # Save updated users
+            with open(self.users_file, 'w') as f:
+                json.dump(users, f, indent=2)
+            
+            return True
+        except Exception as e:
+            st.error(f"Error creating user: {str(e)}")
+            return False
+    
+    def get_users_dataframe(self):
+        """Get all users as a pandas DataFrame"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            users_list = []
+            for username, user_data in users.items():
+                user_record = {
+                    'username': username,
+                    'full_name': user_data.get('full_name', ''),
+                    'email': user_data.get('email', ''),
+                    'role': user_data.get('role', ''),
+                    'department': user_data.get('department', ''),
+                    'created_date': user_data.get('created_date', ''),
+                    'created_by': user_data.get('created_by', ''),
+                    'last_login': user_data.get('last_login', '')
+                }
+                users_list.append(user_record)
+            
+            return pd.DataFrame(users_list)
+        except Exception:
+            return pd.DataFrame()
+    
+    def reset_user_password(self, username, new_password):
+        """Reset a user's password"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            if username not in users:
+                return False
+            
+            # Update password
+            users[username]["password_hash"] = self._hash_password(new_password)
+            
+            # Save updated users
+            with open(self.users_file, 'w') as f:
+                json.dump(users, f, indent=2)
+            
+            return True
+        except Exception as e:
+            st.error(f"Error resetting password: {str(e)}")
+            return False
+    
+    def delete_user(self, username):
+        """Delete a user"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            if username not in users:
+                return False
+            
+            # Remove user
+            del users[username]
+            
+            # Save updated users
+            with open(self.users_file, 'w') as f:
+                json.dump(users, f, indent=2)
+            
+            return True
+        except Exception as e:
+            st.error(f"Error deleting user: {str(e)}")
+            return False
+    
+    def update_last_login(self, username):
+        """Update user's last login time"""
+        try:
+            with open(self.users_file, 'r') as f:
+                users = json.load(f)
+            
+            if username in users:
+                users[username]["last_login"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                with open(self.users_file, 'w') as f:
+                    json.dump(users, f, indent=2)
+        except Exception:
+            pass  # Silently fail for login time updates
 
 def get_auth_manager():
     """Get singleton auth manager"""
