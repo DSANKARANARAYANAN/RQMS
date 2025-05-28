@@ -9,7 +9,7 @@ from utils.scheduler import start_scheduler
 # Page configuration
 st.set_page_config(
     page_title="QRMS Dashboard",
-    page_icon="🏭",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -25,7 +25,7 @@ def init_data_manager():
 data_manager = init_data_manager()
 
 # Dashboard header
-st.title("🏭 QRMS - Quality Rejection Management System")
+st.title("📊 QRMS Dashboard - Quality Analytics")
 st.markdown("---")
 
 # Sidebar filters
@@ -233,7 +233,7 @@ else:
     st.subheader("🕒 Recent Rejections")
     if not filtered_df.empty:
         recent_rejections = filtered_df.nlargest(10, 'date')[['date', 'module', 'rejection_type', 'quantity', 'reason', 'operator']]
-        recent_rejections['date'] = recent_rejections['date'].dt.strftime('%Y-%m-%d %H:%M')
+        recent_rejections['date'] = recent_rejections['date'].dt.strftime('%Y-%m-%d')
         st.dataframe(recent_rejections, use_container_width=True)
 
     # Export data functionality

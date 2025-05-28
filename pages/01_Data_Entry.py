@@ -18,6 +18,12 @@ data_manager = init_data_manager()
 
 st.title("📝 Rejection Data Entry")
 st.markdown("Enter new rejection records for manufacturing modules")
+
+# Add relevant image/icon
+col1, col2, col3 = st.columns([1, 2, 1])
+with col2:
+    st.image("https://via.placeholder.com/400x200/1f77b4/ffffff?text=📝+Data+Entry", caption="Quality Data Entry Portal")
+
 st.markdown("---")
 
 # Load available modules and rejection types
