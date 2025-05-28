@@ -47,12 +47,24 @@ with st.form("rejection_entry"):
             help="Choose the manufacturing module where rejection occurred"
         )
         
-        # Rejection type selection
-        selected_type = st.selectbox(
-            "Rejection Type *",
-            options=types_df['name'].tolist(),
-            help="Select the type of rejection"
-        )
+        # Get applicable rejection types for selected module
+        if selected_module:
+            applicable_types = data_manager.get_rejection_types_for_module(selected_module)
+            if applicable_types:
+                selected_type = st.selectbox(
+                    "Rejection Type *",
+                    options=applicable_types,
+                    help="Select the type of rejection (filtered for this module)"
+                )
+            else:
+                st.warning(f"⚠️ No rejection types configured for module '{selected_module}'")
+                selected_type = None
+        else:
+            selected_type = st.selectbox(
+                "Rejection Type *",
+                options=[],
+                help="Select a module first to see applicable rejection types"
+            )
         
         # Quantity
         quantity = st.number_input(
@@ -108,6 +120,8 @@ if submitted:
     # Validate required fields
     if not all([selected_module, selected_type, quantity, operator, reason]):
         st.error("❌ Please fill in all required fields marked with *")
+    elif selected_type is None:
+        st.error("❌ No rejection types available for the selected module. Please configure rejection types first.")
     else:
         # Combine date and time
         entry_datetime = datetime.combine(entry_date, entry_time)

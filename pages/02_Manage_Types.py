@@ -131,15 +131,30 @@ with tab2:
                     help="Brief description of the rejection type (optional)"
                 )
             
+            # Module mapping section
+            st.subheader("📦 Map to Modules *")
+            if not modules_df.empty:
+                mapped_modules = st.multiselect(
+                    "Select applicable modules",
+                    options=modules_df['name'].tolist(),
+                    help="Choose which modules this rejection type applies to (mandatory)"
+                )
+            else:
+                st.warning("⚠️ No modules available. Please add modules first.")
+                mapped_modules = []
+            
             submitted_type = st.form_submit_button("➕ Add Rejection Type", type="primary")
             
             if submitted_type:
                 if not type_name.strip():
                     st.error("❌ Rejection type name is required")
+                elif not mapped_modules:
+                    st.error("❌ Please select at least one module for this rejection type")
                 else:
                     success, message = data_manager.add_rejection_type(
                         name=type_name.strip(),
-                        description=type_description.strip()
+                        description=type_description.strip(),
+                        mapped_modules=mapped_modules
                     )
                     
                     if success:
@@ -156,7 +171,7 @@ with tab2:
         # Display types in a more user-friendly format
         for idx, rejection_type in types_df.iterrows():
             with st.container():
-                col1, col2, col3 = st.columns([3, 4, 1])
+                col1, col2, col3, col4 = st.columns([2, 3, 3, 1])
                 
                 with col1:
                     st.write(f"**{rejection_type['name']}**")
@@ -168,6 +183,15 @@ with tab2:
                     st.write(description)
                 
                 with col3:
+                    # Show mapped modules
+                    mapped_modules = str(rejection_type.get('mapped_modules', '')).split(',')
+                    mapped_modules = [m.strip() for m in mapped_modules if m.strip()]
+                    if mapped_modules:
+                        st.write(f"📦 {', '.join(mapped_modules)}")
+                    else:
+                        st.write("📦 No modules mapped")
+                
+                with col4:
                     if st.button("🗑️", key=f"del_type_{idx}", help="Delete rejection type"):
                         success, message = data_manager.delete_rejection_type(rejection_type['name'])
                         if success:

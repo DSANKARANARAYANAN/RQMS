@@ -16,6 +16,26 @@ class DataManager:
         # Initialize files if they don't exist
         self._initialize_files()
     
+    def get_rejection_types_for_module(self, module_name):
+        """Get rejection types that are mapped to a specific module"""
+        try:
+            types_df = self.load_rejection_types()
+            if types_df.empty:
+                return []
+            
+            # Filter types that have this module in their mapped_modules
+            applicable_types = []
+            for _, row in types_df.iterrows():
+                mapped_modules = str(row.get('mapped_modules', '')).split(',')
+                mapped_modules = [m.strip() for m in mapped_modules if m.strip()]
+                if module_name in mapped_modules:
+                    applicable_types.append(row['name'])
+            
+            return applicable_types
+        except Exception as e:
+            print(f"Error getting rejection types for module: {str(e)}")
+            return []
+    
     def _initialize_files(self):
         """Initialize CSV files with headers if they don't exist"""
         
@@ -28,7 +48,7 @@ class DataManager:
         
         # Initialize rejection_types.csv
         if not os.path.exists(self.types_file):
-            types_headers = ['name', 'description', 'created_date']
+            types_headers = ['name', 'description', 'mapped_modules', 'created_date']
             with open(self.types_file, 'w', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerow(types_headers)
@@ -88,17 +108,21 @@ class DataManager:
         except Exception as e:
             return False, f"Error adding rejection: {str(e)}"
     
-    def add_rejection_type(self, name, description):
-        """Add a new rejection type"""
+    def add_rejection_type(self, name, description, mapped_modules):
+        """Add a new rejection type with mapped modules"""
         try:
             # Check if type already exists
             existing_types = self.load_rejection_types()
             if not existing_types.empty and name in existing_types['name'].values:
                 return False, "Rejection type already exists"
             
+            # Convert modules list to comma-separated string
+            modules_str = ",".join(mapped_modules) if isinstance(mapped_modules, list) else mapped_modules
+            
             new_type = {
                 'name': name,
                 'description': description,
+                'mapped_modules': modules_str,
                 'created_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             

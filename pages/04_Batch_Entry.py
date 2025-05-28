@@ -36,7 +36,12 @@ if types_df.empty:
 
 # Get lists for the table
 modules_list = modules_df['name'].tolist()
-types_list = types_df['name'].tolist()
+
+# Create a function to get applicable types for a module
+def get_applicable_types_for_module(module_name):
+    if not module_name:
+        return []
+    return data_manager.get_rejection_types_for_module(module_name)
 
 # Session state for table data
 if 'batch_data' not in st.session_state:
@@ -76,11 +81,10 @@ edited_df = st.data_editor(
             options=modules_list,
             required=True
         ),
-        "Rejection_Type": st.column_config.SelectboxColumn(
+        "Rejection_Type": st.column_config.TextColumn(
             "Rejection Type",
-            help="Select the rejection type",
-            options=types_list,
-            required=True
+            help="Enter rejection type (will be validated against module mapping)",
+            max_chars=100
         ),
         "Quantity": st.column_config.NumberColumn(
             "Quantity",
@@ -162,6 +166,15 @@ with col4:
         for idx, row in edited_df.iterrows():
             # Skip empty rows
             if not row['Module'] or not row['Rejection_Type'] or row['Quantity'] <= 0:
+                continue
+            
+            # Validate rejection type is applicable to module
+            applicable_types = data_manager.get_rejection_types_for_module(row['Module'])
+            if row['Rejection_Type'] not in applicable_types:
+                if applicable_types:
+                    errors.append(f"Row {idx + 1}: '{row['Rejection_Type']}' is not valid for module '{row['Module']}'. Available types: {', '.join(applicable_types)}")
+                else:
+                    errors.append(f"Row {idx + 1}: No rejection types configured for module '{row['Module']}'")
                 continue
             
             # Validate required fields
@@ -289,14 +302,15 @@ with st.expander("❓ Help & Tips"):
     
     **Table Features:**
     - **Dynamic Rows**: Add more rows as needed
-    - **Dropdown Selection**: Modules and rejection types are pre-populated
-    - **Validation**: Only complete rows with valid data will be submitted
+    - **Module Selection**: Choose from dropdown of configured modules
+    - **Smart Validation**: Rejection types are validated against module mapping
     - **Bulk Operations**: Set common values and apply to multiple rows
     
     **Tips:**
     - Leave operator/shift empty to use defaults
     - Quantity must be greater than 0
     - Reason is required for each entry
+    - Only rejection types mapped to the selected module are valid
     - Incomplete rows are automatically skipped
     - Table is cleared after successful submission
     """)
