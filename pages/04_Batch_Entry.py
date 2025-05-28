@@ -43,6 +43,25 @@ def get_applicable_types_for_module(module_name):
         return []
     return data_manager.get_rejection_types_for_module(module_name)
 
+# Display helpful mapping information
+st.info("""
+💡 **Smart Entry Tips:**
+- All rejection types are shown in the dropdown, but only valid combinations will be accepted
+- The system validates each entry against module-specific rejection type mappings
+- Invalid combinations will be highlighted with error messages
+""")
+
+# Show module-rejection type mapping for reference
+if not modules_df.empty and not types_df.empty:
+    with st.expander("📋 View Module-Rejection Type Mappings", expanded=False):
+        for _, module in modules_df.iterrows():
+            applicable_types = get_applicable_types_for_module(module['name'])
+            if applicable_types:
+                st.write(f"**{module['name']}:** {', '.join(applicable_types)}")
+            else:
+                st.write(f"**{module['name']}:** No rejection types configured")
+        st.caption("Use this reference to ensure you select valid module-rejection type combinations")
+
 # Session state for table data
 if 'batch_data' not in st.session_state:
     # Create initial empty rows
@@ -81,10 +100,11 @@ edited_df = st.data_editor(
             options=modules_list,
             required=True
         ),
-        "Rejection_Type": st.column_config.TextColumn(
+        "Rejection_Type": st.column_config.SelectboxColumn(
             "Rejection Type",
-            help="Enter rejection type (will be validated against module mapping)",
-            max_chars=100
+            help="Select rejection type (options available for all modules)",
+            options=types_df['name'].tolist() if not types_df.empty else [],
+            required=True
         ),
         "Quantity": st.column_config.NumberColumn(
             "Quantity",
