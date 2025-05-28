@@ -18,65 +18,183 @@ def main():
             st.switch_page("pages/00_Dashboard.py")
         return
     
-    # Custom CSS for login page
+    # Modern CSS for professional login page
     st.markdown("""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .stApp {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        
         .main-header {
             text-align: center;
-            color: #1f77b4;
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
+            margin-bottom: 2.5rem;
         }
+        
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
         .sub-header {
-            text-align: center;
-            color: #666;
+            color: rgba(255, 255, 255, 0.9);
             font-size: 1.2rem;
-            margin-bottom: 2rem;
+            font-weight: 400;
+            margin-bottom: 3rem;
         }
+        
         .login-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 2rem;
+            max-width: 480px;
+            margin: 2rem auto;
+            padding: 3rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .credentials-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        .credentials-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .credential-item {
+            background: white;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .credential-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .credential-role {
+            font-weight: 600;
+            color: #4f46e5;
+            font-size: 0.9rem;
+        }
+        
+        .credential-details {
+            color: #6b7280;
+            font-size: 0.85rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            margin-top: 0.25rem;
+        }
+        
+        .stTextInput > div > div > input {
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            padding: 0.875rem 1.25rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+        
+        .stButton > button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1.5rem;
+            color: white;
+        }
+        
+        .stButton > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .success-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+            margin: 2rem 0;
+        }
+        
+        .stAlert > div {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.25rem;
         }
     </style>
     """, unsafe_allow_html=True)
     
-    # Header
-    st.markdown('<div class="main-header">🏭 QRMS</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Quality Rejection Management System</div>', unsafe_allow_html=True)
+    # Modern Header
+    st.markdown("""
+    <div class="main-header">
+        <div class="main-title">🏭 QRMS</div>
+        <div class="sub-header">Quality Rejection Management System</div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # Login container
-    with st.container():
-        st.markdown("---")
+    # Modern login container
+    st.markdown('<div class="login-container">', unsafe_allow_html=True)
+    
+    # Stylized credentials section
+    st.markdown("""
+    <div class="credentials-section">
+        <div class="credentials-title">🔑 Default Login Credentials</div>
+        <div class="credential-item">
+            <div class="credential-role">Super Admin</div>
+            <div class="credential-details">Username: superadmin | Password: admin123</div>
+        </div>
+        <div class="credential-item">
+            <div class="credential-role">Admin</div>
+            <div class="credential-details">Username: admin | Password: admin456</div>
+        </div>
+        <div class="credential-item">
+            <div class="credential-role">User</div>
+            <div class="credential-details">Username: qcuser | Password: user789</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
         
-        # Display default credentials for demo
-        with st.expander("👤 Default Login Credentials", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.markdown("**Super Admin**")
-                st.code("Username: superadmin\nPassword: admin123")
-                st.caption("Full system access")
-            
-            with col2:
-                st.markdown("**Admin**")
-                st.code("Username: admin\nPassword: admin456") 
-                st.caption("Module & type management")
-            
-            with col3:
-                st.markdown("**User**")
-                st.code("Username: qcuser\nPassword: user789")
-                st.caption("Data entry & viewing")
-        
-        st.markdown("---")
-        
-        # Login form
-        with st.form("login_form", clear_on_submit=False):
-            st.markdown("### 🔐 Please Login")
+    # Login form with modern styling
+    with st.form("login_form", clear_on_submit=False):
+        st.markdown('<div class="login-form">', unsafe_allow_html=True)
+        st.markdown("### 🔐 Please Login")
             
             col1, col2 = st.columns([1, 1])
             with col1:
