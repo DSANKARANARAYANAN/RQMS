@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from utils.email_sender import EmailSender
 from utils.scheduler import get_scheduler, start_scheduler
+from utils.auth import get_auth_manager
 
 # Page configuration
 st.set_page_config(

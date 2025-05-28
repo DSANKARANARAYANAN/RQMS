@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from utils.data_manager import DataManager
 from utils.scheduler import start_scheduler
+from utils.auth import get_auth_manager
 
 # Page configuration
 st.set_page_config(
@@ -13,6 +14,14 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Initialize authentication
+auth_manager = get_auth_manager()
+
+# Check authentication
+if not auth_manager.is_authenticated():
+    auth_manager.login_form()
+    st.stop()
 
 # Start scheduler for automated reports
 start_scheduler()
@@ -23,6 +32,9 @@ def init_data_manager():
 
 # Initialize data manager
 data_manager = init_data_manager()
+
+# Show user info in sidebar
+auth_manager.show_user_info()
 
 # Dashboard header
 st.title("📊 QRMS Dashboard - Quality Analytics")
@@ -236,19 +248,20 @@ else:
         recent_rejections['date'] = recent_rejections['date'].dt.strftime('%Y-%m-%d')
         st.dataframe(recent_rejections, use_container_width=True)
 
-    # Export data functionality
-    st.markdown("---")
-    col1, col2 = st.columns([3, 1])
-    
-    with col1:
-        st.subheader("📥 Export Data")
+    # Export data functionality (only for admin and super admin)
+    if auth_manager.has_permission(st.session_state.get("user_role"), "export_data"):
+        st.markdown("---")
+        col1, col2 = st.columns([3, 1])
         
-    with col2:
-        if st.button("📊 Download CSV"):
-            csv_data = filtered_df.to_csv(index=False)
-            st.download_button(
-                label="💾 Download Filtered Data",
-                data=csv_data,
-                file_name=f"rejection_data_{start_date}_to_{end_date}.csv",
-                mime="text/csv"
-            )
+        with col1:
+            st.subheader("📥 Export Data")
+            
+        with col2:
+            if st.button("📊 Download CSV"):
+                csv_data = filtered_df.to_csv(index=False)
+                st.download_button(
+                    label="💾 Download Filtered Data",
+                    data=csv_data,
+                    file_name=f"rejection_data_{start_date}_to_{end_date}.csv",
+                    mime="text/csv"
+                )

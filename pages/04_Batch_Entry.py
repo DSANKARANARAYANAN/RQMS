@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, time
 from utils.data_manager import DataManager
+from utils.auth import get_auth_manager
 
 # Page configuration
 st.set_page_config(
@@ -9,6 +10,17 @@ st.set_page_config(
     page_icon="📊",
     layout="wide"
 )
+
+# Initialize authentication
+auth_manager = get_auth_manager()
+
+# Check authentication and permissions
+if not auth_manager.is_authenticated():
+    st.error("🚫 Please login to access this page")
+    st.stop()
+
+auth_manager.require_permission("enter_data")
+auth_manager.show_user_info()
 
 # Initialize data manager
 @st.cache_resource
