@@ -82,7 +82,7 @@ if not types_df.empty:
 # Main dashboard content
 if filtered_df.empty:
     st.warning("📋 No rejection data available for the selected filters. Use the Data Entry page to add rejection records.")
-    st.info("💡 **Getting Started:**\n- Navigate to 'Data Entry' to record rejections\n- Visit 'Manage Types' to set up modules and rejection types\n- Configure email settings for automated reports")
+    st.info("💡 **Getting Started:**\n- Navigate to 'Data Entry' for single records or 'Batch Entry' for multiple records\n- Visit 'Manage Types' to set up modules and rejection types\n- Configure email settings for automated reports")
 else:
     # Key metrics
     col1, col2, col3, col4 = st.columns(4)

@@ -205,10 +205,14 @@ with col1:
         st.switch_page("app.py")
 
 with col2:
-    if st.button("📝 Data Entry"):
+    if st.button("📝 Single Entry"):
         st.switch_page("pages/01_Data_Entry.py")
 
 with col3:
+    if st.button("📊 Batch Entry"):
+        st.switch_page("pages/04_Batch_Entry.py")
+
+with col4:
     if st.button("🔧 Manage Types"):
         st.switch_page("pages/02_Manage_Types.py")
 

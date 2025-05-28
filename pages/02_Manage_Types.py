@@ -203,21 +203,25 @@ st.markdown("---")
 # Quick actions and navigation
 st.subheader("⚡ Quick Actions")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
     if st.button("🏠 Go to Dashboard"):
         st.switch_page("app.py")
 
 with col2:
-    if st.button("📝 Data Entry"):
+    if st.button("📝 Single Entry"):
         st.switch_page("pages/01_Data_Entry.py")
 
 with col3:
+    if st.button("📊 Batch Entry"):
+        st.switch_page("pages/04_Batch_Entry.py")
+
+with col4:
     if st.button("📧 Email Settings"):
         st.switch_page("pages/03_Email_Settings.py")
 
-with col4:
+with col5:
     if st.button("🔄 Refresh Data"):
         st.rerun()
 

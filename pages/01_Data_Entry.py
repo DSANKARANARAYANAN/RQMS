@@ -186,10 +186,14 @@ with col1:
         st.switch_page("app.py")
 
 with col2:
+    if st.button("📊 Batch Entry"):
+        st.switch_page("pages/04_Batch_Entry.py")
+
+with col3:
     if st.button("🔧 Manage Types & Modules"):
         st.switch_page("pages/02_Manage_Types.py")
 
-with col3:
+with col4:
     if st.button("📧 Email Settings"):
         st.switch_page("pages/03_Email_Settings.py")
 
