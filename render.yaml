@@ -3,10 +3,10 @@ services:
     name: qrms
     env: python
     plan: free
-    buildCommand: pip install streamlit pandas plotly schedule
+    buildCommand: pip install streamlit==1.39.0 pandas==2.2.3 plotly==5.24.1 schedule==1.2.2
     startCommand: streamlit run login.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
     envVars:
       - key: STREAMLIT_SERVER_HEADLESS
-        value: true
+        value: "true"
       - key: STREAMLIT_SERVER_ENABLE_CORS
-        value: false
+        value: "false"
