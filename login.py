@@ -13,9 +13,7 @@ def main():
     # Check if already authenticated
     if auth_manager.is_authenticated():
         st.success("✅ You are already logged in!")
-        st.info("🔄 Click the button below to go to the main application")
-        if st.button("🚀 Go to Dashboard", type="primary", use_container_width=True):
-            st.switch_page("pages/00_Dashboard.py")
+        st.info("🔄 Use the sidebar navigation to access the application features")
         return
     
     # Modern CSS for professional login page
@@ -219,9 +217,8 @@ def main():
                     st.success(f"✅ Welcome, {user_data['full_name']}!")
                     st.balloons()
                     
-                    # Redirect to main application
-                    st.info("🔄 Redirecting to dashboard...")
-                    st.switch_page("pages/00_Dashboard.py")
+                    # Show success message
+                    st.info("🔄 Login successful! Use the sidebar navigation to access features.")
                 else:
                     st.error("❌ Invalid username or password")
         
