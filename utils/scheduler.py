@@ -47,9 +47,13 @@ class ReportScheduler:
     def start(self):
         """Start the scheduler in a background thread"""
         if not self.is_running:
-            scheduler_thread = threading.Thread(target=self.run_scheduler, daemon=True)
-            scheduler_thread.start()
-            print("Report scheduler started")
+            try:
+                scheduler_thread = threading.Thread(target=self.run_scheduler, daemon=True)
+                scheduler_thread.start()
+                print("Report scheduler started")
+            except Exception as e:
+                print(f"Could not start scheduler: {str(e)}")
+                # Don't fail the app if scheduler can't start
     
     def stop(self):
         """Stop the scheduler"""
@@ -64,8 +68,12 @@ def start_scheduler():
     """Start the global scheduler"""
     global _scheduler
     if _scheduler is None:
-        _scheduler = ReportScheduler()
-        _scheduler.start()
+        try:
+            _scheduler = ReportScheduler()
+            _scheduler.start()
+        except Exception as e:
+            print(f"Scheduler startup failed, continuing without it: {str(e)}")
+            _scheduler = None
     return _scheduler
 
 def get_scheduler():

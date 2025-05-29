@@ -135,8 +135,14 @@ if not auth_manager.is_authenticated():
     st.info("🔄 Please go back to the login page to authenticate.")
     st.stop()
 
-# Start scheduler for automated reports
-start_scheduler()
+# Initialize scheduler only if not already started
+if 'scheduler_started' not in st.session_state:
+    try:
+        start_scheduler()
+        st.session_state.scheduler_started = True
+    except Exception as e:
+        # Don't let scheduler issues prevent the app from starting
+        st.session_state.scheduler_started = False
 
 def init_data_manager():
     """Initialize data manager"""
